@@ -1,6 +1,7 @@
 import CONFIG from './config.js';
 
-async function fetchProjectData(repoName) {
+async function fetchProjectData(projectObj) {
+    const { repo: repoName, displayName } = projectObj;
     try {
         const response = await fetch(`https://api.github.com/repos/${CONFIG.githubUsername}/${repoName}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -13,7 +14,7 @@ async function fetchProjectData(repoName) {
         }
 
         return {
-            name: repo.name,
+            name: displayName || repo.name,
             description: repo.description || "No description provided.",
             stars: repo.stargazers_count,
             language: repo.language,
@@ -62,7 +63,7 @@ async function init() {
     titleEl.textContent = CONFIG.siteTitle;
     subtitleEl.textContent = CONFIG.siteSubtitle;
 
-    const projectDataPromises = CONFIG.repositories.map(repo => fetchProjectData(repo));
+    const projectDataPromises = CONFIG.repositories.map(projectObj => fetchProjectData(projectObj));
     const projects = await Promise.all(projectDataPromises);
 
     grid.innerHTML = ''; // Clear loading state

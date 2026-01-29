@@ -1,11 +1,11 @@
 const CONFIG = {
     githubUsername: "McGovernsound",
     repositories: [
-        "trkr-expense-dist",
-        "trkr-inventory-dist",
-        "amp-monitor-dist",
-        "Rack-Designer",
-        "line-draw-desktop"
+        { repo: "trkr-expense-dist", displayName: "Expense Tracker" },
+        { repo: "trkr-inventory-dist", displayName: "Inventory System" },
+        { repo: "amp-monitor-dist", displayName: "Amp Monitor" },
+        { repo: "Rack-Designer", displayName: "Rack Designer" },
+        { repo: "line-draw-desktop", displayName: "Line Draw" }
     ],
     siteTitle: "Devin's Projects",
     siteSubtitle: "Download the latest versions of my software projects."
