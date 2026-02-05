@@ -70,13 +70,13 @@ h1 {
 /* Projects Grid */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
     padding: 2rem 0 4rem;
 }
 
 .project-card {
-    padding: 2rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -102,8 +102,7 @@ h1 {
 
 .project-description {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    height: 4.5rem;
+    font-size: 0.9rem;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
