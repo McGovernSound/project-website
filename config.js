@@ -6,7 +6,7 @@ const CONFIG = {
         { repo: "amp-monitor-dist", displayName: "Amp Monitor" },
         { repo: "Rack-Designer", displayName: "Rack Designer" }
     ],
-    siteTitle: "Devin's Projects",
+    siteTitle: "McGovern Sound's Projects",
     siteSubtitle: "Download the latest versions of my software projects."
 };
 
