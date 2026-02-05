@@ -13,14 +13,16 @@ async function fetchProjectData(projectObj) {
             latestRelease = await releasesResponse.json();
         }
 
+        // Shorten version: "v1.0.1-2026..." -> "v1.0.1"
+        const fullVersion = latestRelease ? latestRelease.tag_name : "v1.0.0";
+        const shortVersion = fullVersion.split('-')[0];
+
         return {
             name: displayName || repo.name,
             description: repo.description || "No description provided.",
-            stars: repo.stargazers_count,
-            language: repo.language,
-            version: latestRelease ? latestRelease.tag_name : "v1.0.0",
+            version: shortVersion,
             downloadUrl: latestRelease ? latestRelease.html_url : repo.html_url,
-            updatedAt: new Date(repo.updated_at).toLocaleDateString()
+            publishedAt: latestRelease ? new Date(latestRelease.published_at).toLocaleDateString() : new Date(repo.updated_at).toLocaleDateString()
         };
     } catch (error) {
         console.error(`Error fetching data for ${repoName}:`, error);
@@ -39,13 +41,12 @@ function createProjectCard(project) {
         </div>
         <div class="project-meta">
             <div class="meta-item">
-                <span>⭐</span> ${project.stars}
+                <span class="meta-label">Current Version</span>
+                <span class="meta-value">${project.version}</span>
             </div>
             <div class="meta-item">
-                <span>📦</span> ${project.version}
-            </div>
-            <div class="meta-item">
-                <span>📅</span> ${project.updatedAt}
+                <span class="meta-label">Release Date</span>
+                <span class="meta-value">${project.publishedAt}</span>
             </div>
         </div>
         <a href="${project.downloadUrl}" class="btn-download" target="_blank">Download Latest</a>

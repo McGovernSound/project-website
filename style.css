@@ -75,8 +75,13 @@ body {
 }
 
 @keyframes move {
-    from { transform: translate(0, 0) scale(1); }
-    to { transform: translate(10%, 10%) scale(1.1); }
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(10%, 10%) scale(1.1);
+    }
 }
 
 /* Glassmorphism Utility */
@@ -158,16 +163,29 @@ h1 {
 
 .project-meta {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.8rem;
     margin-top: 1.5rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 .meta-item {
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.meta-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.meta-value {
+    color: #fff;
+    font-weight: 400;
 }
 
 .btn-download {
@@ -189,7 +207,8 @@ h1 {
 }
 
 /* Loading & Error */
-.loading-state, .error-state {
+.loading-state,
+.error-state {
     grid-column: 1 / -1;
     text-align: center;
     padding: 4rem;
@@ -206,7 +225,9 @@ h1 {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Footer */
@@ -224,6 +245,11 @@ footer a {
 
 /* Responsive */
 @media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .hero { padding: 2rem; }
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero {
+        padding: 2rem;
+    }
 }
