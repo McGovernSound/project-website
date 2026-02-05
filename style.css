@@ -70,27 +70,30 @@ h1 {
 /* Projects Grid */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
     padding: 1rem 0 2rem;
 }
 
 .project-card {
-    padding: 1.5rem;
+    padding: 1.25rem 2rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     justify-content: space-between;
+    gap: 2rem;
     transition: var(--transition);
 }
 
 .project-card:hover {
-    transform: translateY(-8px);
+    transform: translateX(8px);
     background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.8);
 }
 
 .project-header {
-    margin-bottom: 1.5rem;
+    flex: 2;
+    margin-bottom: 0;
 }
 
 .project-title {
@@ -103,18 +106,19 @@ h1 {
 .project-description {
     color: var(--text-muted);
     font-size: 0.9rem;
-    height: 4.3rem;
+    margin-top: 0.25rem;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
 .project-meta {
     display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-top: 1.5rem;
+    flex-direction: row;
+    flex: 1.5;
+    gap: 2rem;
+    margin-top: 0;
     font-size: 0.9rem;
 }
 
@@ -134,19 +138,20 @@ h1 {
 
 .meta-value {
     color: #fff;
-    font-weight: 400;
+    font-weight: 600;
 }
 
 .btn-download {
     display: inline-block;
-    padding: 1rem;
+    padding: 0.8rem 1.5rem;
     background: var(--primary-color);
     color: #000;
     text-align: center;
     text-decoration: none;
     font-weight: 700;
     border-radius: 12px;
-    margin-top: 2rem;
+    margin-top: 0;
+    min-width: 160px;
     transition: var(--transition);
 }
 
