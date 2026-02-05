@@ -1,7 +1,7 @@
 :root {
     --primary-color: #00b4ff;
     --secondary-color: #7000ff;
-    --bg-dark: #0a0a0c;
+    --bg-dark: #000000;
     --text-main: #ffffff;
     --text-muted: #a0a0ab;
     --glass-bg: rgba(255, 255, 255, 0.03);
@@ -31,58 +31,7 @@ body {
     padding: 0 2rem;
 }
 
-/* Background Blobs */
-.background-blobs {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-    filter: blur(80px);
-    opacity: 0.5;
-}
 
-.blob {
-    position: absolute;
-    width: 40vw;
-    height: 40vw;
-    border-radius: 50%;
-}
-
-.blob-1 {
-    background: var(--primary-color);
-    top: -10%;
-    left: -10%;
-    animation: move 20s infinite alternate;
-}
-
-.blob-2 {
-    background: var(--secondary-color);
-    bottom: -10%;
-    right: -10%;
-    animation: move 25s infinite alternate-reverse;
-}
-
-.blob-3 {
-    background: #ff007a;
-    top: 40%;
-    left: 50%;
-    width: 30vw;
-    height: 30vw;
-    animation: move 30s infinite alternate;
-}
-
-@keyframes move {
-    from {
-        transform: translate(0, 0) scale(1);
-    }
-
-    to {
-        transform: translate(10%, 10%) scale(1.1);
-    }
-}
 
 /* Glassmorphism Utility */
 .glass {
