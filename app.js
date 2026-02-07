@@ -1,4 +1,4 @@
-import CONFIG from './config.js?v=1.1.1';
+import CONFIG from './config.js?v=1.1.2';
 
 async function fetchProjectData(projectObj) {
     const { repo: repoName, displayName } = projectObj;
@@ -17,11 +17,22 @@ async function fetchProjectData(projectObj) {
         const fullVersion = latestRelease ? latestRelease.tag_name : "v1.0.0";
         const shortVersion = fullVersion.split('-')[0];
 
+        // Direct Download Logic: Look for .zip or .dmg in assets
+        let downloadUrl = latestRelease ? latestRelease.html_url : repo.html_url;
+        if (latestRelease && latestRelease.assets && latestRelease.assets.length > 0) {
+            const preferredAsset = latestRelease.assets.find(asset =>
+                asset.name.endsWith('.zip') || asset.name.endsWith('.dmg')
+            );
+            if (preferredAsset) {
+                downloadUrl = preferredAsset.browser_download_url;
+            }
+        }
+
         return {
             name: displayName || repo.name,
             description: repo.description || "No description provided.",
             version: shortVersion,
-            downloadUrl: latestRelease ? latestRelease.html_url : repo.html_url,
+            downloadUrl: downloadUrl,
             publishedAt: latestRelease ? new Date(latestRelease.published_at).toLocaleDateString() : new Date(repo.updated_at).toLocaleDateString()
         };
     } catch (error) {
