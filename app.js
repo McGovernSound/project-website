@@ -1,4 +1,4 @@
-import CONFIG from './config.js';
+import CONFIG from './config.js?v=1.1.0';
 
 async function fetchProjectData(projectObj) {
     const { repo: repoName, displayName } = projectObj;
