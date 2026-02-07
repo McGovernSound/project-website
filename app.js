@@ -1,4 +1,4 @@
-import CONFIG from './config.js?v=1.1.0';
+import CONFIG from './config.js?v=1.1.1';
 
 async function fetchProjectData(projectObj) {
     const { repo: repoName, displayName } = projectObj;
@@ -69,7 +69,9 @@ async function init() {
 
     grid.innerHTML = ''; // Clear loading state
 
-    const validProjects = projects.filter(p => p !== null);
+    const validProjects = projects
+        .filter(p => p !== null)
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     if (validProjects.length === 0) {
         grid.innerHTML = `
