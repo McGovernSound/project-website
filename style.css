@@ -53,13 +53,15 @@ header {
     margin-bottom: 1rem;
 }
 
-h1 {
+#site-title {
     font-size: 2.8rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #fff 0%, var(--primary-color) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary-color) !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
 }
 
 #site-subtitle {
