@@ -7,8 +7,8 @@ const CONFIG = {
         { repo: "Rack-Designer", displayName: "MSG Rack Designer" },
         { repo: "line-draw-desktop-dist", displayName: "MSG Signal Flow" }
     ],
-    siteTitle: "MGS's Latest Releases",
-    siteSubtitle: "Download the latest versions of my software projects."
+    siteTitle: "MGS's Latest",
+    siteSubtitle: "Download the latest versions of the MSG software suite."
 };
 
 export default CONFIG;
