@@ -80,11 +80,18 @@ header {
 .project-card {
     padding: 1.25rem 2rem;
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    transition: var(--transition);
+}
+
+.project-main-content {
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    transition: var(--transition);
 }
 
 .project-card:hover {
@@ -160,6 +167,68 @@ header {
 .btn-download:hover {
     background: #fff;
     transform: scale(1.02);
+}
+
+/* Release Notes Dropdown */
+.release-notes-dropdown {
+    width: 100%;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
+.release-notes-summary {
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.release-notes-summary::-webkit-details-marker {
+    display: none;
+}
+
+.release-notes-summary::before {
+    content: '▶';
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.release-notes-dropdown[open] .release-notes-summary::before {
+    transform: rotate(90deg);
+}
+
+.release-notes-content {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-height: 250px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    /* Preserve spacing for release notes */
+}
+
+.release-notes-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.release-notes-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.release-notes-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
 }
 
 /* Loading & Error */

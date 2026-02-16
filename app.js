@@ -1,4 +1,4 @@
-import CONFIG from './config.js?v=1.1.2';
+import CONFIG from './config.js?v=1.1.3';
 
 async function fetchProjectData(projectObj) {
     const { repo: repoName, displayName } = projectObj;
@@ -33,6 +33,7 @@ async function fetchProjectData(projectObj) {
             description: repo.description || "No description provided.",
             version: shortVersion,
             downloadUrl: downloadUrl,
+            releaseNotes: latestRelease ? latestRelease.body : "No release notes available.",
             publishedAt: latestRelease ? new Date(latestRelease.published_at).toLocaleDateString() : new Date(repo.updated_at).toLocaleDateString()
         };
     } catch (error) {
@@ -46,21 +47,27 @@ function createProjectCard(project) {
     card.className = 'project-card glass';
 
     card.innerHTML = `
-        <div class="project-header">
-            <h2 class="project-title">${project.name}</h2>
-            <p class="project-description">${project.description}</p>
-        </div>
-        <div class="project-meta">
-            <div class="meta-item">
-                <span class="meta-label">Current Version</span>
-                <span class="meta-value">${project.version}</span>
+        <div class="project-main-content">
+            <div class="project-header">
+                <h2 class="project-title">${project.name}</h2>
+                <p class="project-description">${project.description}</p>
             </div>
-            <div class="meta-item">
-                <span class="meta-label">Release Date</span>
-                <span class="meta-value">${project.publishedAt}</span>
+            <div class="project-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Current Version</span>
+                    <span class="meta-value">${project.version}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Release Date</span>
+                    <span class="meta-value">${project.publishedAt}</span>
+                </div>
             </div>
+            <a href="${project.downloadUrl}" class="btn-download" target="_blank">Download Latest</a>
         </div>
-        <a href="${project.downloadUrl}" class="btn-download" target="_blank">Download Latest</a>
+        <details class="release-notes-dropdown">
+            <summary class="release-notes-summary">Release Notes</summary>
+            <div class="release-notes-content">${project.releaseNotes || 'No release notes available.'}</div>
+        </details>
     `;
 
     return card;
