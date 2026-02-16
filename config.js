@@ -8,7 +8,7 @@ const CONFIG = {
         { repo: "line-draw-desktop-dist", displayName: "MSG Signal Flow" }
     ],
     siteTitle: "MGS's Latest",
-    siteSubtitle: "Download the latest versions of the MSG software suite."
+    siteSubtitle: "Download the latest versions of the MGS suite."
 };
 
 export default CONFIG;
