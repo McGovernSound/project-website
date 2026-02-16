@@ -7,7 +7,7 @@ const CONFIG = {
         { repo: "Rack-Designer", displayName: "MSG Rack Designer" },
         { repo: "line-draw-desktop-dist", displayName: "MSG Signal Flow" }
     ],
-    siteTitle: "McGovern Sound's Projects",
+    siteTitle: "MGS's Latest Releases",
     siteSubtitle: "Download the latest versions of my software projects."
 };
 
