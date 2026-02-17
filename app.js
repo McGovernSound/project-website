@@ -1,9 +1,15 @@
-import CONFIG from './config.js?v=1.1.4';
+import CONFIG from './config.js?v=1.1.6';
+
+const CACHE_KEY = 'mgs_projects_cache_v1_3';
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function fetchProjectData(projectObj) {
     const { repo: repoName, displayName } = projectObj;
     try {
         const response = await fetch(`https://api.github.com/repos/${CONFIG.githubUsername}/${repoName}`);
+        if (response.status === 403) {
+            throw new Error('RATE_LIMIT');
+        }
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const repo = await response.json();
 
@@ -11,6 +17,8 @@ async function fetchProjectData(projectObj) {
         let latestRelease = null;
         if (releasesResponse.ok) {
             latestRelease = await releasesResponse.json();
+        } else if (releasesResponse.status === 403) {
+            console.warn(`Rate limit hit for ${repoName} releases, falling back to repo data.`);
         }
 
         // Shorten version: "v1.0.1-2026..." -> "v1.0.1"
@@ -37,6 +45,10 @@ async function fetchProjectData(projectObj) {
             publishedAt: latestRelease ? new Date(latestRelease.published_at).toLocaleDateString() : new Date(repo.updated_at).toLocaleDateString()
         };
     } catch (error) {
+        if (error.message === 'RATE_LIMIT') {
+            console.error(`Rate limit exceeded for GitHub API.`);
+            throw error; // Re-throw to handle in init
+        }
         console.error(`Error fetching data for ${repoName}:`, error);
         return null;
     }
@@ -73,6 +85,30 @@ function createProjectCard(project) {
     return card;
 }
 
+function getCachedData() {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+
+    try {
+        const { timestamp, data } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+            console.log('Using cached project data');
+            return data;
+        }
+    } catch (e) {
+        console.error('Error parsing cache:', e);
+    }
+    return null;
+}
+
+function setCachedData(data) {
+    const cacheObject = {
+        timestamp: Date.now(),
+        data: data
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheObject));
+}
+
 async function init() {
     const grid = document.getElementById('projects-grid');
     const titleEl = document.getElementById('site-title');
@@ -82,27 +118,49 @@ async function init() {
     titleEl.textContent = CONFIG.siteTitle;
     subtitleEl.textContent = CONFIG.siteSubtitle;
 
-    const projectDataPromises = CONFIG.repositories.map(projectObj => fetchProjectData(projectObj));
-    const projects = await Promise.all(projectDataPromises);
-
-    grid.innerHTML = ''; // Clear loading state
-
-    const validProjects = projects
-        .filter(p => p !== null)
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-    if (validProjects.length === 0) {
-        grid.innerHTML = `
-            <div class="error-state">
-                <p>Could not load projects. Check your configuration or GitHub API limits.</p>
-            </div>
-        `;
+    // Try to load from cache first
+    const cachedProjects = getCachedData();
+    if (cachedProjects) {
+        renderProjects(grid, cachedProjects);
         return;
     }
 
-    validProjects.forEach(project => {
+    try {
+        const projectDataPromises = CONFIG.repositories.map(projectObj => fetchProjectData(projectObj));
+        const projects = await Promise.all(projectDataPromises);
+
+        const validProjects = projects
+            .filter(p => p !== null)
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        if (validProjects.length > 0) {
+            setCachedData(validProjects);
+            renderProjects(grid, validProjects);
+        } else {
+            showError(grid, 'Could not load projects. Check your configuration.');
+        }
+    } catch (error) {
+        if (error.message === 'RATE_LIMIT') {
+            showError(grid, 'GitHub API rate limit exceeded. Please try again in an hour or check back later.');
+        } else {
+            showError(grid, 'An error occurred while fetching projects.');
+        }
+    }
+}
+
+function renderProjects(grid, projects) {
+    grid.innerHTML = '';
+    projects.forEach(project => {
         grid.appendChild(createProjectCard(project));
     });
+}
+
+function showError(grid, message) {
+    grid.innerHTML = `
+        <div class="error-state">
+            <p>${message}</p>
+        </div>
+    `;
 }
 
 document.addEventListener('DOMContentLoaded', init);
