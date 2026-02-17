@@ -1,7 +1,7 @@
 const CONFIG = {
-    githubUsername: "McGovernsound",
+    githubUsername: "McGovernSound",
     repositories: [
-        { repo: "trkr-expense-dist", displayName: "MGS Expense Tracker" },
+        { repo: "mgs-expense-dist", displayName: "MGS Expense" },
         { repo: "trkr-inventory-dist", displayName: "MGS Inventory System" },
         { repo: "amp-monitor-dist", displayName: "MGS Amp Monitor" },
         { repo: "Rack-Designer", displayName: "MGS Rack Designer" },
