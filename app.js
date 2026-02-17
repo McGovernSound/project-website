@@ -1,6 +1,6 @@
 import CONFIG from './config.js?v=1.1.6';
 
-const CACHE_KEY = 'mgs_projects_cache_v1_3';
+const CACHE_KEY = 'mgs_projects_cache_v1_4';
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function fetchProjectData(projectObj) {
