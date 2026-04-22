@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const medicalInsInput = document.getElementById('medicalIns');
     const otherPreTaxInput = document.getElementById('otherPreTax');
     const postTaxInput = document.getElementById('postTax');
-    const stateSelect = document.getElementById('stateSelect');
     const stateTaxWarning = document.getElementById('stateTaxWarning');
 
     const stateTaxRates = {
