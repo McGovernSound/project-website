@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paycheck Estimator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="container">
+        <header>
+            <h1>Paycheck Estimator</h1>
+            <p>Calculate your estimated take-home pay</p>
+        </header>
+
+        <section class="calculator">
+            <div class="input-panel">
+                <h2>Income Details</h2>
+                
+                <div class="form-group toggle-group">
+                    <label>Income Type</label>
+                    <div class="toggle-container">
+                        <input type="radio" id="salary" name="incomeType" value="salary" checked>
+                        <label for="salary" class="toggle-btn">Salary</label>
+                        <input type="radio" id="hourly" name="incomeType" value="hourly">
+                        <label for="hourly" class="toggle-btn">Hourly</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="incomeAmount">Gross Income</label>
+                    <div class="input-prefix">
+                        <span>$</span>
+                        <input type="number" id="incomeAmount" placeholder="75000" min="0" step="any">
+                    </div>
+                </div>
+
+                <div class="form-group" id="hoursGroup" style="display: none;">
+                    <label for="hoursPerWeek">Hours per Week</label>
+                    <input type="number" id="hoursPerWeek" placeholder="40" value="40" min="1" max="168" step="0.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="payFrequency">Pay Frequency</label>
+                    <select id="payFrequency">
+                        <option value="weekly">Weekly (52/yr)</option>
+                        <option value="biweekly" selected>Bi-weekly (26/yr)</option>
+                        <option value="semimonthly">Semi-monthly (24/yr)</option>
+                        <option value="monthly">Monthly (12/yr)</option>
+                        <option value="annually">Annually (1/yr)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stateTax">State Tax Rate (%)</label>
+                    <div class="input-suffix">
+                        <input type="number" id="stateTax" placeholder="5.0" value="0" min="0" max="100" step="0.1">
+                        <span>%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deductions">Pre-tax Deductions (per paycheck)</label>
+                    <div class="input-prefix">
+                        <span>$</span>
+                        <input type="number" id="deductions" placeholder="0" value="0" min="0" step="any">
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <h2>Estimated Paycheck</h2>
+                
+                <div class="result-row total">
+                    <span>Gross Pay</span>
+                    <span id="outGross">$0.00</span>
+                </div>
+                
+                <div class="result-row deduction-row">
+                    <span>Pre-tax Deductions</span>
+                    <span id="outDeductions">-$0.00</span>
+                </div>
+
+                <div class="divider"></div>
+                
+                <div class="result-row">
+                    <span>Taxable Income</span>
+                    <span id="outTaxable">$0.00</span>
+                </div>
+
+                <div class="result-row tax">
+                    <span>Estimated Federal Tax</span>
+                    <span id="outFederal">-$0.00</span>
+                </div>
+
+                <div class="result-row tax">
+                    <span>FICA (Social Security & Medicare)</span>
+                    <span id="outFICA">-$0.00</span>
+                </div>
+
+                <div class="result-row tax">
+                    <span>State Tax</span>
+                    <span id="outState">-$0.00</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="result-row net">
+                    <span>Net Take-Home Pay</span>
+                    <span id="outNet">$0.00</span>
+                </div>
+                
+                <p class="disclaimer">
+                    *This is an estimate using simplified tax brackets and standard deductions. Actual tax liability will vary.
+                </p>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
