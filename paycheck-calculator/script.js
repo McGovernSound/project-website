@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stateTaxInput = document.getElementById('stateTax');
     const deductionsInput = document.getElementById('deductions');
     const stateSelect = document.getElementById('stateSelect');
+    const stateTaxWarning = document.getElementById('stateTaxWarning');
 
     const stateTaxRates = {
         "AL": 5.0, "AK": 0.0, "AZ": 2.5, "AR": 4.4, "CA": 9.3, "CO": 4.4, "CT": 5.0, "DE": 6.6, "FL": 0.0, "GA": 5.49,
@@ -21,7 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         stateSelect.addEventListener('change', (e) => {
             if (e.target.value && stateTaxRates[e.target.value] !== undefined) {
                 stateTaxInput.value = stateTaxRates[e.target.value];
+                if (stateTaxWarning) stateTaxWarning.style.display = 'block';
                 calculate();
+            } else {
+                if (stateTaxWarning) stateTaxWarning.style.display = 'none';
             }
         });
     }
