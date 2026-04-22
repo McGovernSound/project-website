@@ -6,7 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoursGroup = document.getElementById('hoursGroup');
     const payFrequencySelect = document.getElementById('payFrequency');
     const stateTaxInput = document.getElementById('stateTax');
-    const deductionsInput = document.getElementById('deductions');
+    const stateSelect = document.getElementById('stateSelect');
+    const filingStatusSelect = document.getElementById('filingStatus');
+    const retire401kInput = document.getElementById('retire401k');
+    const medicalInsInput = document.getElementById('medicalIns');
+    const otherPreTaxInput = document.getElementById('otherPreTax');
+    const postTaxInput = document.getElementById('postTax');
     const stateSelect = document.getElementById('stateSelect');
     const stateTaxWarning = document.getElementById('stateTaxWarning');
 
@@ -32,16 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Outputs
     const outGross = document.getElementById('outGross');
-    const outDeductions = document.getElementById('outDeductions');
     const outTaxable = document.getElementById('outTaxable');
+    const out401k = document.getElementById('out401k');
+    const outMedical = document.getElementById('outMedical');
+    const outOtherPreTax = document.getElementById('outOtherPreTax');
+    const outPostTax = document.getElementById('outPostTax');
+    const row401k = document.getElementById('row401k');
+    const rowMedical = document.getElementById('rowMedical');
+    const rowOtherPreTax = document.getElementById('rowOtherPreTax');
+    const rowPostTax = document.getElementById('rowPostTax');
     const outFederal = document.getElementById('outFederal');
     const outFICA = document.getElementById('outFICA');
     const outState = document.getElementById('outState');
     const outNet = document.getElementById('outNet');
 
     // Attach event listeners for real-time calculation
-    const inputs = [incomeAmountInput, hoursPerWeekInput, payFrequencySelect, stateTaxInput, deductionsInput];
+    const inputs = [incomeAmountInput, hoursPerWeekInput, payFrequencySelect, filingStatusSelect, stateTaxInput, retire401kInput, medicalInsInput, otherPreTaxInput, postTaxInput];
     inputs.forEach(input => input.addEventListener('input', calculate));
+    filingStatusSelect.addEventListener('change', calculate);
     
     // Toggle between hourly and salary
     incomeTypeRadios.forEach(radio => {
@@ -70,8 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const incomeAmount = parseFloat(incomeAmountInput.value) || 0;
         const hoursPerWeek = parseFloat(hoursPerWeekInput.value) || 40;
         const payFrequency = payFrequencySelect.value;
+        const filingStatus = filingStatusSelect.value;
         const stateTaxRate = (parseFloat(stateTaxInput.value) || 0) / 100;
-        const deductionsPerPaycheck = parseFloat(deductionsInput.value) || 0;
+        
+        const retire401kPct = (parseFloat(retire401kInput.value) || 0) / 100;
+        const medicalIns = parseFloat(medicalInsInput.value) || 0;
+        const otherPreTax = parseFloat(otherPreTaxInput.value) || 0;
+        const postTax = parseFloat(postTaxInput.value) || 0;
 
         // Pay periods per year
         const periodsMap = {
@@ -95,8 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Calculate Per Paycheck Gross
         const grossPerPaycheck = annualGross / periodsPerYear;
         
+        const retire401kAmt = grossPerPaycheck * retire401kPct;
+        const totalPreTax = retire401kAmt + medicalIns + otherPreTax;
+
         // Taxable Pay (after pre-tax deductions)
-        const taxablePaycheck = Math.max(0, grossPerPaycheck - deductionsPerPaycheck);
+        const taxablePaycheck = Math.max(0, grossPerPaycheck - totalPreTax);
         const annualTaxable = taxablePaycheck * periodsPerYear;
 
         // FICA (7.65% flat rate for simplicity, ignoring SS cap for this lightweight estimator)
@@ -105,40 +126,80 @@ document.addEventListener('DOMContentLoaded', () => {
         // State Tax
         const stateTaxPerPaycheck = taxablePaycheck * stateTaxRate;
 
-        // Federal Tax Estimate (Single Filer 2024 simplified brackets)
-        // Standard deduction roughly $14,600
-        const stdDeduction = 14600;
+        // Standard Deduction & Brackets (2024)
+        let stdDeduction = 14600;
+        let brackets = [];
+
+        if (filingStatus === 'single') {
+            stdDeduction = 14600;
+            brackets = [
+                { limit: 11600, rate: 0.10 },
+                { limit: 47150, rate: 0.12 },
+                { limit: 100525, rate: 0.22 },
+                { limit: 191950, rate: 0.24 },
+                { limit: 243725, rate: 0.32 },
+                { limit: 609350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ];
+        } else if (filingStatus === 'married') {
+            stdDeduction = 29200;
+            brackets = [
+                { limit: 23200, rate: 0.10 },
+                { limit: 94300, rate: 0.12 },
+                { limit: 201050, rate: 0.22 },
+                { limit: 383900, rate: 0.24 },
+                { limit: 487450, rate: 0.32 },
+                { limit: 731200, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ];
+        } else if (filingStatus === 'hoh') {
+            stdDeduction = 21900;
+            brackets = [
+                { limit: 16550, rate: 0.10 },
+                { limit: 63100, rate: 0.12 },
+                { limit: 100500, rate: 0.22 },
+                { limit: 191950, rate: 0.24 },
+                { limit: 243700, rate: 0.32 },
+                { limit: 609350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ];
+        }
+
         const adjustedAnnual = Math.max(0, annualTaxable - stdDeduction);
         
         let annualFedTax = 0;
-        if (adjustedAnnual > 0) {
-            // Very simplified 2024 brackets for single filers
-            const b1 = 11600;
-            const b2 = 47150;
-            const b3 = 100525;
-            const b4 = 191950;
-            const b5 = 243725;
-            const b6 = 609350;
-
-            let remaining = adjustedAnnual;
-            
-            if (remaining > b6) { annualFedTax += (remaining - b6) * 0.37; remaining = b6; }
-            if (remaining > b5) { annualFedTax += (remaining - b5) * 0.35; remaining = b5; }
-            if (remaining > b4) { annualFedTax += (remaining - b4) * 0.32; remaining = b4; }
-            if (remaining > b3) { annualFedTax += (remaining - b3) * 0.24; remaining = b3; }
-            if (remaining > b2) { annualFedTax += (remaining - b2) * 0.22; remaining = b2; }
-            if (remaining > b1) { annualFedTax += (remaining - b1) * 0.12; remaining = b1; }
-            if (remaining > 0)  { annualFedTax += (remaining) * 0.10; }
+        let previousLimit = 0;
+        
+        for (const bracket of brackets) {
+            if (adjustedAnnual > previousLimit) {
+                const taxableInBracket = Math.min(adjustedAnnual, bracket.limit) - previousLimit;
+                annualFedTax += taxableInBracket * bracket.rate;
+                previousLimit = bracket.limit;
+            } else {
+                break;
+            }
         }
 
         const fedTaxPerPaycheck = annualFedTax / periodsPerYear;
 
         // Net Paycheck
-        const netPaycheck = taxablePaycheck - fedTaxPerPaycheck - ficaPerPaycheck - stateTaxPerPaycheck;
+        const netPaycheck = taxablePaycheck - fedTaxPerPaycheck - ficaPerPaycheck - stateTaxPerPaycheck - postTax;
 
         // Update UI
         outGross.textContent = formatCurrency(grossPerPaycheck);
-        outDeductions.textContent = `-${formatCurrency(deductionsPerPaycheck)}`;
+        
+        row401k.style.display = retire401kAmt > 0 ? 'flex' : 'none';
+        out401k.textContent = `-${formatCurrency(retire401kAmt)}`;
+
+        rowMedical.style.display = medicalIns > 0 ? 'flex' : 'none';
+        outMedical.textContent = `-${formatCurrency(medicalIns)}`;
+
+        rowOtherPreTax.style.display = otherPreTax > 0 ? 'flex' : 'none';
+        outOtherPreTax.textContent = `-${formatCurrency(otherPreTax)}`;
+
+        rowPostTax.style.display = postTax > 0 ? 'flex' : 'none';
+        outPostTax.textContent = `-${formatCurrency(postTax)}`;
+
         outTaxable.textContent = formatCurrency(taxablePaycheck);
         outFederal.textContent = `-${formatCurrency(fedTaxPerPaycheck)}`;
         outFICA.textContent = `-${formatCurrency(ficaPerPaycheck)}`;

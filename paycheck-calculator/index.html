@@ -51,6 +51,17 @@
                         <option value="monthly">Monthly (12/yr)</option>
                         <option value="annually">Annually (1/yr)</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="filingStatus">Filing Status</label>
+                    <select id="filingStatus">
+                        <option value="single" selected>Single</option>
+                        <option value="married">Married Filing Jointly</option>
+                        <option value="hoh">Head of Household</option>
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label for="stateSelect">State</label>
                     <select id="stateSelect">
@@ -120,10 +131,34 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="deductions">Pre-tax Deductions (per paycheck)</label>
+                    <label for="retire401k">401(k) / Retirement (%)</label>
+                    <div class="input-suffix">
+                        <input type="number" id="retire401k" placeholder="0" value="0" min="0" max="100" step="0.1">
+                        <span>%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicalIns">Health / Medical (per paycheck)</label>
                     <div class="input-prefix">
                         <span>$</span>
-                        <input type="number" id="deductions" placeholder="0" value="0" min="0" step="any">
+                        <input type="number" id="medicalIns" placeholder="0" value="0" min="0" step="any">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="otherPreTax">Other Pre-Tax (per paycheck)</label>
+                    <div class="input-prefix">
+                        <span>$</span>
+                        <input type="number" id="otherPreTax" placeholder="0" value="0" min="0" step="any">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="postTax">Post-Tax Deductions (per paycheck)</label>
+                    <div class="input-prefix">
+                        <span>$</span>
+                        <input type="number" id="postTax" placeholder="0" value="0" min="0" step="any">
                     </div>
                 </div>
             </div>
@@ -136,9 +171,19 @@
                     <span id="outGross">$0.00</span>
                 </div>
                 
-                <div class="result-row deduction-row">
-                    <span>Pre-tax Deductions</span>
-                    <span id="outDeductions">-$0.00</span>
+                <div class="result-row deduction-row" id="row401k" style="display: none;">
+                    <span>401(k) / Retirement</span>
+                    <span id="out401k">-$0.00</span>
+                </div>
+                
+                <div class="result-row deduction-row" id="rowMedical" style="display: none;">
+                    <span>Health / Medical</span>
+                    <span id="outMedical">-$0.00</span>
+                </div>
+
+                <div class="result-row deduction-row" id="rowOtherPreTax" style="display: none;">
+                    <span>Other Pre-Tax</span>
+                    <span id="outOtherPreTax">-$0.00</span>
                 </div>
 
                 <div class="divider"></div>
@@ -161,6 +206,11 @@
                 <div class="result-row tax">
                     <span>State Tax</span>
                     <span id="outState">-$0.00</span>
+                </div>
+
+                <div class="result-row tax" id="rowPostTax" style="display: none;">
+                    <span>Post-Tax Deductions</span>
+                    <span id="outPostTax">-$0.00</span>
                 </div>
 
                 <div class="divider"></div>
