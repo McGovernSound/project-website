@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const payFrequencySelect = document.getElementById('payFrequency');
     const stateTaxInput = document.getElementById('stateTax');
     const deductionsInput = document.getElementById('deductions');
+    const stateSelect = document.getElementById('stateSelect');
+
+    const stateTaxRates = {
+        "AL": 5.0, "AK": 0.0, "AZ": 2.5, "AR": 4.4, "CA": 9.3, "CO": 4.4, "CT": 5.0, "DE": 6.6, "FL": 0.0, "GA": 5.49,
+        "HI": 8.25, "ID": 5.8, "IL": 4.95, "IN": 3.05, "IA": 5.7, "KS": 5.7, "KY": 4.0, "LA": 4.25, "ME": 7.15, "MD": 5.75,
+        "MA": 5.0, "MI": 4.25, "MN": 6.8, "MS": 4.7, "MO": 4.95, "MT": 5.9, "NE": 5.84, "NV": 0.0, "NH": 0.0, "NJ": 6.37,
+        "NM": 4.9, "NY": 6.0, "NC": 4.5, "ND": 2.5, "OH": 3.5, "OK": 4.75, "OR": 8.75, "PA": 3.07, "RI": 5.99, "SC": 6.4,
+        "SD": 0.0, "TN": 0.0, "TX": 0.0, "UT": 4.65, "VT": 6.6, "VA": 5.75, "WA": 0.0, "WV": 5.12, "WI": 5.3, "WY": 0.0
+    };
+
+    if (stateSelect) {
+        stateSelect.addEventListener('change', (e) => {
+            if (e.target.value && stateTaxRates[e.target.value] !== undefined) {
+                stateTaxInput.value = stateTaxRates[e.target.value];
+                calculate();
+            }
+        });
+    }
 
     // Outputs
     const outGross = document.getElementById('outGross');
