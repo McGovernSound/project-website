@@ -1,6 +1,6 @@
 import CONFIG from './config.js?v=1.1.9';
 
-const CACHE_KEY = 'mgs_projects_cache_v1_7';
+const CACHE_KEY = 'mgs_projects_cache_v1_8';
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function fetchProjectData(projectObj) {
@@ -71,12 +71,7 @@ function createProjectCard(project) {
     const card = document.createElement('div');
     card.className = 'project-card glass';
 
-    card.innerHTML = `
-        <div class="project-main-content">
-            <div class="project-header">
-                <h2 class="project-title">${project.name}</h2>
-                <p class="project-description">${project.description}</p>
-            </div>
+    const metaHtml = project.isWebApp ? '' : `
             <div class="project-meta">
                 <div class="meta-item">
                     <span class="meta-label">Current Version</span>
@@ -86,13 +81,24 @@ function createProjectCard(project) {
                     <span class="meta-label">Release Date</span>
                     <span class="meta-value">${project.publishedAt}</span>
                 </div>
-            </div>
-            <a href="${project.downloadUrl}" class="btn-download" target="_blank">${project.isWebApp ? 'Launch App' : 'Download Latest'}</a>
-        </div>
+            </div>`;
+
+    const releaseNotesHtml = project.isWebApp ? '' : `
         <details class="release-notes-dropdown">
             <summary class="release-notes-summary">Release Notes</summary>
             <div class="release-notes-content">${project.releaseNotes || 'No release notes available.'}</div>
-        </details>
+        </details>`;
+
+    card.innerHTML = `
+        <div class="project-main-content">
+            <div class="project-header">
+                <h2 class="project-title">${project.name}</h2>
+                <p class="project-description">${project.description}</p>
+            </div>
+            ${metaHtml}
+            <a href="${project.downloadUrl}" class="btn-download" target="_blank">${project.isWebApp ? 'Launch App' : 'Download Latest'}</a>
+        </div>
+        ${releaseNotesHtml}
     `;
 
     return card;
