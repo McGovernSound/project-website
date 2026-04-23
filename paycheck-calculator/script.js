@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const incomeAmountInput = document.getElementById('incomeAmount');
     const hoursPerWeekInput = document.getElementById('hoursPerWeek');
     const hoursGroup = document.getElementById('hoursGroup');
+    const otHoursInput = document.getElementById('otHours');
+    const otGroup = document.getElementById('otGroup');
     const payFrequencySelect = document.getElementById('payFrequency');
     const stateTaxInput = document.getElementById('stateTax');
     const stateSelect = document.getElementById('stateSelect');
@@ -51,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const outNet = document.getElementById('outNet');
 
     // Attach event listeners for real-time calculation
-    const inputs = [incomeAmountInput, hoursPerWeekInput, payFrequencySelect, filingStatusSelect, stateTaxInput, retire401kInput, medicalInsInput, otherPreTaxInput, postTaxInput];
+    const inputs = [incomeAmountInput, hoursPerWeekInput, otHoursInput, payFrequencySelect, filingStatusSelect, stateTaxInput, retire401kInput, medicalInsInput, otherPreTaxInput, postTaxInput];
     inputs.forEach(input => input.addEventListener('input', calculate));
     filingStatusSelect.addEventListener('change', calculate);
     
@@ -60,12 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('change', (e) => {
             if(e.target.value === 'hourly') {
                 hoursGroup.style.display = 'block';
+                otGroup.style.display = 'block';
                 incomeAmountInput.placeholder = "35.00";
                 if(incomeAmountInput.value && incomeAmountInput.value > 1000) {
                     incomeAmountInput.value = ""; // clear if switching from salary to hourly and it's a huge number
                 }
             } else {
                 hoursGroup.style.display = 'none';
+                otGroup.style.display = 'none';
                 incomeAmountInput.placeholder = "75000";
             }
             calculate();
@@ -81,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const incomeType = document.querySelector('input[name="incomeType"]:checked').value;
         const incomeAmount = parseFloat(incomeAmountInput.value) || 0;
         const hoursPerWeek = parseFloat(hoursPerWeekInput.value) || 40;
+        const otHours = parseFloat(otHoursInput.value) || 0;
         const payFrequency = payFrequencySelect.value;
         const filingStatus = filingStatusSelect.value;
         const stateTaxRate = (parseFloat(stateTaxInput.value) || 0) / 100;
@@ -105,8 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (incomeType === 'salary') {
             annualGross = incomeAmount;
         } else {
-            // Hourly: Amount * hours * 52
-            annualGross = incomeAmount * hoursPerWeek * 52;
+            // Hourly: (Amount * hours * 52) + (OT * 1.5 * Amount * 52)
+            const regularAnnual = incomeAmount * hoursPerWeek * 52;
+            const otAnnual = otHours * (incomeAmount * 1.5) * 52;
+            annualGross = regularAnnual + otAnnual;
         }
 
         // Calculate Per Paycheck Gross
