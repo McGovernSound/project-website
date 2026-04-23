@@ -132,41 +132,41 @@ document.addEventListener('DOMContentLoaded', () => {
         // State Tax
         const stateTaxPerPaycheck = taxablePaycheck * stateTaxRate;
 
-        // Standard Deduction & Brackets (2024)
-        let stdDeduction = 14600;
+        // Standard Deduction & Brackets (2026)
+        let stdDeduction = 16100;
         let brackets = [];
 
         if (filingStatus === 'single') {
-            stdDeduction = 14600;
+            stdDeduction = 16100;
             brackets = [
-                { limit: 11600, rate: 0.10 },
-                { limit: 47150, rate: 0.12 },
-                { limit: 100525, rate: 0.22 },
-                { limit: 191950, rate: 0.24 },
-                { limit: 243725, rate: 0.32 },
-                { limit: 609350, rate: 0.35 },
+                { limit: 12400, rate: 0.10 },
+                { limit: 50400, rate: 0.12 },
+                { limit: 105700, rate: 0.22 },
+                { limit: 201775, rate: 0.24 },
+                { limit: 256225, rate: 0.32 },
+                { limit: 640600, rate: 0.35 },
                 { limit: Infinity, rate: 0.37 }
             ];
         } else if (filingStatus === 'married') {
-            stdDeduction = 29200;
+            stdDeduction = 32200;
             brackets = [
-                { limit: 23200, rate: 0.10 },
-                { limit: 94300, rate: 0.12 },
-                { limit: 201050, rate: 0.22 },
-                { limit: 383900, rate: 0.24 },
-                { limit: 487450, rate: 0.32 },
-                { limit: 731200, rate: 0.35 },
+                { limit: 24800, rate: 0.10 },
+                { limit: 100800, rate: 0.12 },
+                { limit: 211400, rate: 0.22 },
+                { limit: 403550, rate: 0.24 },
+                { limit: 512450, rate: 0.32 },
+                { limit: 768700, rate: 0.35 },
                 { limit: Infinity, rate: 0.37 }
             ];
         } else if (filingStatus === 'hoh') {
-            stdDeduction = 21900;
+            stdDeduction = 24150;
             brackets = [
-                { limit: 16550, rate: 0.10 },
-                { limit: 63100, rate: 0.12 },
-                { limit: 100500, rate: 0.22 },
-                { limit: 191950, rate: 0.24 },
-                { limit: 243700, rate: 0.32 },
-                { limit: 609350, rate: 0.35 },
+                { limit: 17700, rate: 0.10 },
+                { limit: 67450, rate: 0.12 },
+                { limit: 112850, rate: 0.22 },
+                { limit: 201775, rate: 0.24 },
+                { limit: 256225, rate: 0.32 },
+                { limit: 640600, rate: 0.35 },
                 { limit: Infinity, rate: 0.37 }
             ];
         }
