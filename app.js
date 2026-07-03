@@ -1,6 +1,6 @@
-import CONFIG from './config.js?v=1.1.10';
+import CONFIG from './config.js?v=1.1.11';
 
-const CACHE_KEY = 'mgs_projects_cache_v1_9';
+const CACHE_KEY = 'mgs_projects_cache_v1_11';
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function fetchProjectData(projectObj) {
@@ -37,12 +37,24 @@ async function fetchProjectData(projectObj) {
         const fullVersion = latestRelease ? latestRelease.tag_name : "v1.0.0";
         const shortVersion = fullVersion.split('-')[0];
 
-        // Direct Download Logic: Look for .zip or .dmg in assets
+        // Direct Download Logic: Detect OS and serve appropriate asset
         let downloadUrl = latestRelease ? latestRelease.html_url : repo.html_url;
         if (latestRelease && latestRelease.assets && latestRelease.assets.length > 0) {
-            const preferredAsset = latestRelease.assets.find(asset =>
-                asset.name.endsWith('.zip') || asset.name.endsWith('.dmg')
-            );
+            const isWindows = window.navigator.userAgent.indexOf("Win") !== -1;
+            let preferredAsset = null;
+
+            if (isWindows) {
+                // Look for .exe if the user is on Windows
+                preferredAsset = latestRelease.assets.find(asset => asset.name.endsWith('.exe'));
+            }
+
+            if (!preferredAsset) {
+                // Default to Mac assets (.dmg or .zip) if not Windows, or if no .exe was found
+                preferredAsset = latestRelease.assets.find(asset =>
+                    asset.name.endsWith('.dmg') || asset.name.endsWith('.zip')
+                );
+            }
+
             if (preferredAsset) {
                 downloadUrl = preferredAsset.browser_download_url;
             }
