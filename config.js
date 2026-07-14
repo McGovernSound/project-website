@@ -8,6 +8,7 @@ const CONFIG = {
         { repo: "line-draw-desktop-dist", displayName: "MGS Signal Flow" },
         { repo: "amp-data-sheet-dist", displayName: "MGS Amp Data Sheet" },
         { repo: "coffee-tracker-dist", displayName: "Bean Counter" },
+        { repo: "Inventory-Tracker", displayName: "MGS Inventory Tracker" },
         { type: "webapp", id: "paycheck-calculator", displayName: "MGS Paycheck Estimator", description: "Calculate your estimated take-home pay with configurable deductions and tax brackets.", path: "./paycheck-calculator/" }
     ],
     siteTitle: "MGS's Latest",
