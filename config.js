@@ -3,7 +3,6 @@ const CONFIG = {
     repositories: [
         { repo: "mgs-expense-dist", displayName: "MGS Expense" },
         { repo: "mgs-inventory-dist", displayName: "MGS Inventory" },
-        { repo: "amp-monitor-dist", displayName: "MGS Amp Monitor" },
         { repo: "Rack-Designer", displayName: "MGS Rack Designer" },
         { repo: "line-draw-desktop-dist", displayName: "MGS Signal Flow" },
         { repo: "amp-data-sheet-dist", displayName: "MGS Amp Data Sheet" },
