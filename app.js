@@ -1,7 +1,42 @@
-import CONFIG from './config.js?v=1.1.12';
+import CONFIG from './config.js?v=1.1.13';
 
-const CACHE_KEY = 'mgs_projects_cache_v1_12';
+const CACHE_KEY = 'mgs_projects_cache_v1_13';
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+function detectClientSystem() {
+    const userAgent = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+    const isWindows = /Win/i.test(userAgent) || /Win/i.test(platform);
+    const isMac = /Mac/i.test(userAgent) || /Mac/i.test(platform);
+
+    let macArch = 'arm64'; // Default to modern Apple Silicon
+
+    if (isMac) {
+        if (navigator.userAgentData?.architecture) {
+            const arch = navigator.userAgentData.architecture.toLowerCase();
+            if (arch.includes('arm')) macArch = 'arm64';
+            else if (arch.includes('x86') || arch.includes('64')) macArch = 'x64';
+        } else {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        if (/Apple/i.test(renderer) && !/Intel/i.test(renderer)) {
+                            macArch = 'arm64';
+                        } else if (/Intel/i.test(renderer)) {
+                            macArch = 'x64';
+                        }
+                    }
+                }
+            } catch (e) {}
+        }
+    }
+
+    return { isWindows, isMac, macArch };
+}
 
 async function fetchProjectData(projectObj) {
     if (projectObj.type === 'webapp') {
@@ -10,6 +45,8 @@ async function fetchProjectData(projectObj) {
             description: projectObj.description || "No description provided.",
             version: "v1.0.0",
             downloadUrl: projectObj.path,
+            primaryLabel: 'Launch App',
+            alternativeLinks: [],
             releaseNotes: "Initial Release.",
             publishedAt: new Date().toLocaleDateString(),
             isWebApp: true
@@ -37,34 +74,86 @@ async function fetchProjectData(projectObj) {
         const fullVersion = latestRelease ? latestRelease.tag_name : "v1.0.0";
         const shortVersion = fullVersion.split('-')[0];
 
-        // Direct Download Logic: Detect OS and serve appropriate asset
-        let downloadUrl = latestRelease ? latestRelease.html_url : repo.html_url;
+        // Intelligent Multi-Platform Download Logic
+        let primaryUrl = latestRelease ? latestRelease.html_url : repo.html_url;
+        let primaryLabel = 'Download Latest';
+        const alternativeLinks = [];
+
         if (latestRelease && latestRelease.assets && latestRelease.assets.length > 0) {
-            const isWindows = window.navigator.userAgent.indexOf("Win") !== -1;
-            let preferredAsset = null;
+            const client = detectClientSystem();
+            const assets = latestRelease.assets;
 
-            if (isWindows) {
-                // Look for .exe if the user is on Windows
-                preferredAsset = latestRelease.assets.find(asset => asset.name.endsWith('.exe'));
+            // 1. Identify platform assets
+            const winAsset = assets.find(a => a.name.endsWith('.exe'));
+
+            const macArm64Asset = assets.find(a => a.name.endsWith('.dmg') && /arm64/i.test(a.name)) ||
+                                  assets.find(a => a.name.endsWith('.zip') && /arm64/i.test(a.name));
+
+            const macX64Asset = assets.find(a => a.name.endsWith('.dmg') && (/x64/i.test(a.name) || /x86/i.test(a.name) || (!/arm64/i.test(a.name) && !/universal/i.test(a.name)))) ||
+                                assets.find(a => a.name.endsWith('.zip') && (/x64/i.test(a.name) || /x86/i.test(a.name) || (!/arm64/i.test(a.name) && !/universal/i.test(a.name))));
+
+            const macUniversalAsset = assets.find(a => a.name.endsWith('.dmg') && /universal/i.test(a.name)) ||
+                                      assets.find(a => a.name.endsWith('.zip') && /universal/i.test(a.name));
+
+            const fallbackMacAsset = macUniversalAsset || macArm64Asset || macX64Asset ||
+                                     assets.find(a => a.name.endsWith('.dmg')) ||
+                                     assets.find(a => a.name.endsWith('.zip'));
+
+            // 2. Select primary download based on detected OS & architecture
+            if (client.isWindows) {
+                if (winAsset) {
+                    primaryUrl = winAsset.browser_download_url;
+                    primaryLabel = 'Download for Windows (.exe)';
+                } else if (fallbackMacAsset) {
+                    primaryUrl = fallbackMacAsset.browser_download_url;
+                    primaryLabel = 'Download for Mac';
+                }
+            } else if (client.isMac) {
+                if (client.macArch === 'arm64' && macArm64Asset) {
+                    primaryUrl = macArm64Asset.browser_download_url;
+                    primaryLabel = 'Download for Mac (Apple Silicon)';
+                } else if (client.macArch === 'x64' && macX64Asset) {
+                    primaryUrl = macX64Asset.browser_download_url;
+                    primaryLabel = 'Download for Mac (Intel)';
+                } else if (macUniversalAsset) {
+                    primaryUrl = macUniversalAsset.browser_download_url;
+                    primaryLabel = 'Download for Mac (Universal)';
+                } else if (fallbackMacAsset) {
+                    primaryUrl = fallbackMacAsset.browser_download_url;
+                    primaryLabel = 'Download for Mac';
+                }
+            } else {
+                const defaultAsset = fallbackMacAsset || winAsset;
+                if (defaultAsset) {
+                    primaryUrl = defaultAsset.browser_download_url;
+                }
             }
 
-            if (!preferredAsset) {
-                // Default to Mac assets (.dmg or .zip) if not Windows, or if no .exe was found
-                preferredAsset = latestRelease.assets.find(asset =>
-                    asset.name.endsWith('.dmg') || asset.name.endsWith('.zip')
-                );
+            // 3. Assemble alternative download links
+            const candidateAlts = [];
+            if (macArm64Asset) candidateAlts.push({ label: 'Mac (Apple Silicon)', url: macArm64Asset.browser_download_url });
+            if (macX64Asset) candidateAlts.push({ label: 'Mac (Intel)', url: macX64Asset.browser_download_url });
+            if (macUniversalAsset && !macArm64Asset && !macX64Asset) {
+                candidateAlts.push({ label: 'Mac (Universal)', url: macUniversalAsset.browser_download_url });
             }
+            if (winAsset) candidateAlts.push({ label: 'Windows', url: winAsset.browser_download_url });
 
-            if (preferredAsset) {
-                downloadUrl = preferredAsset.browser_download_url;
-            }
+            const seenUrls = new Set([primaryUrl]);
+            candidateAlts.forEach(alt => {
+                if (!seenUrls.has(alt.url)) {
+                    seenUrls.add(alt.url);
+                    alternativeLinks.push(alt);
+                }
+            });
         }
 
         return {
             name: displayName || repo.name,
-            description: repo.description || "No description provided.",
+            description: projectObj.description || repo.description || "No description provided.",
             version: shortVersion,
-            downloadUrl: downloadUrl,
+            downloadUrl: primaryUrl,
+            primaryLabel: primaryLabel,
+            alternativeLinks: alternativeLinks,
             releaseNotes: latestRelease ? latestRelease.body : "No release notes available.",
             publishedAt: latestRelease ? new Date(latestRelease.published_at).toLocaleDateString() : new Date(repo.updated_at).toLocaleDateString(),
             isWebApp: false
@@ -101,6 +190,13 @@ function createProjectCard(project) {
             <div class="release-notes-content">${project.releaseNotes || 'No release notes available.'}</div>
         </details>`;
 
+    const otherLinksHtml = (!project.isWebApp && project.alternativeLinks && project.alternativeLinks.length > 0)
+        ? `<div class="other-downloads">
+            <span>Also for:</span>
+            ${project.alternativeLinks.map(a => `<a href="${a.url}" target="_blank">${a.label}</a>`).join('<span class="sep">•</span>')}
+           </div>`
+        : '';
+
     card.innerHTML = `
         <div class="project-main-content">
             <div class="project-header">
@@ -108,7 +204,10 @@ function createProjectCard(project) {
                 <p class="project-description">${project.description}</p>
             </div>
             ${metaHtml}
-            <a href="${project.downloadUrl}" class="btn-download" target="_blank">${project.isWebApp ? 'Launch App' : 'Download Latest'}</a>
+            <div class="download-action-group">
+                <a href="${project.downloadUrl}" class="btn-download" target="_blank">${project.isWebApp ? 'Launch App' : project.primaryLabel}</a>
+                ${otherLinksHtml}
+            </div>
         </div>
         ${releaseNotesHtml}
     `;

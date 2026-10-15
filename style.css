@@ -150,6 +150,14 @@ header {
     font-weight: 600;
 }
 
+.download-action-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+    min-width: 200px;
+}
+
 .btn-download {
     display: inline-block;
     padding: 0.8rem 1.5rem;
@@ -167,6 +175,31 @@ header {
 .btn-download:hover {
     background: #fff;
     transform: scale(1.02);
+}
+
+.other-downloads {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.other-downloads span.sep {
+    opacity: 0.4;
+}
+
+.other-downloads a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.other-downloads a:hover {
+    color: #fff;
+    text-decoration: underline;
 }
 
 /* Release Notes Dropdown */
